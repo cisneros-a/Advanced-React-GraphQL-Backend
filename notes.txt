@@ -1,0 +1,81 @@
+What is GraphQL Yoga?
+    -An express server.
+    -Sits on top of Apollo Server.
+    -Not instead of express or apollo, but sits on top of both.
+    -There are a bunch of things to get GraphQL up and running 
+        and Yoga packs it all up.
+Resolvers?
+    - Answers the question of where the data comes from
+        and what does the data do in the db?
+    - Two types of resolvers.
+        - Query resolvers :
+            When you pull data
+        - Mutation resolvers :
+            When you push data.
+
+Why are we creating two GraphQL servers?
+    - We have a prisma server
+        - Requires its own typeDefs and Schema
+    - We also have a GraphQL server
+        - Requires its own typeDefs and Schema
+
+In createServer.js, why do we have context?
+    - Makes more sense when going over user auth.
+    - We need to be able to access the db from 
+        resolvers. We can pass that with context.
+    - The function is requesting and return an object
+        that contains the request and db.
+
+- What we did in section 12?
+    - We created our db in db.js
+    - We made a function called createServer, which will
+        ingest our schema.graphQL.
+        - This will match everything with resolver, either 
+            a query or mutation. 
+    - In our index.js, we spun up a version of the graphQL 
+        Yoga server.
+
+-Prisma
+    - It's going to create a set of CRUD API's, if we open up
+        prisma.graphQL, we'll see all these mutations and queries.
+    - All that is included is simple functions and data relations. 
+    -However, we can't use this directly through javascript because there is no 
+        authentication or security layer.
+    - Most importantly, we are not able to create custom logic.
+        - This would include charging credit cards, sending email, performing JTW auth.
+    - If you look within the prisma.graphql file, you will see all the different filters when can apply to a query.
+        - These are not standard with GraphQL, since it is not a query language.
+        - All these filters were provided by Prisma.
+
+Why are there so many GraphQL files?
+    - datamodel.graphQL is for Prisma. That's out backend.
+    - prisma.graphQL is what gets generated based of datamodel.graphql
+    - schema.graphql is our public facing API. It is what we will be interfecing with out JS.
+
+Steps:
+    1. When you want to add a new item, you go to datamodel.graphql, and do 'prisma deploy'
+        which will push it up to the prisma service.
+    2. This will bring down a new copy of our prisma.graphql, where it will show all of
+        our queries and mutations as well as our filters.
+    3. Then we go into our own schema.graphql, which will be our public facing API, where
+        our React app will interface with.
+        - This where we have the ability to create new functions to create new items or query items.
+    4. We need to match our mutations and queries, so we will jump to our Mutations.js and Query.js
+        and we write the resolvers that need to happen.
+        -This is where all of our advanced logic will go, like charging cards, sending emails.
+
+
+Process for creating our delete item mutation:
+    1. We'll start with opening schema.graphql.
+    2. Create the mutation deleteItem. (Keep in mind, you can choose what it returns outside of the '()' like a success string along with the item)
+    3. We want to then want to create the resolver for our mutation in Mutation.js
+    4. This is all we need.
+
+What is the ItemConnections query?
+    1. I believe this is something that comes with Yoga.
+    2. This is used for pagination and infinite scroll.
+    3. If you look at the playground, you'll see it can return 3 things: 
+        edges, pageInfo, aggregate.
+    4. Edges and pageInfo are for infinite scroll. It'll let you know what is the last
+        item you loaded, so you second query can pull items past that.\
+    5. For aggregate, you can query the count and that will return all the item count.
