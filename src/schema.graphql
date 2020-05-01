@@ -12,7 +12,14 @@ type Mutation {
 }
 
 type Query {
-  items: [Item]!
+  # skip will help with pagination, if on the second page, "skip" the first 4 and bring back 5-8.
+  # where will help with our filter and search features.
+  items(
+    where: ItemWhereInput
+    orderBy: ItemOrderByInput
+    skip: Int
+    first: Int
+  ): [Item]!
   # where does ItemWhereUniqueInput come from? It was generated in our prisma.graphql by Prisma
   item(where: ItemWhereUniqueInput!): Item
   itemsConnection(where: ItemWhereInput): ItemConnection
