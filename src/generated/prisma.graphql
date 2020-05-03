@@ -695,6 +695,15 @@ type PageInfo {
   endCursor: String
 }
 
+enum Permission {
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
+
 type Query {
   users(
     where: UserWhereInput
@@ -755,6 +764,10 @@ type User implements Node {
   id: ID!
   name: String!
   email: String!
+  password: String!
+  resetToken: String
+  resetTokenExpiry: String
+  permissions: [Permission]
 }
 
 """
@@ -774,9 +787,15 @@ type UserConnection {
 }
 
 input UserCreateInput {
-  id: ID
   name: String!
   email: String!
+  password: String!
+  resetToken: String
+  resetTokenExpiry: String
+  permissions: UserCreatepermissionsInput
+}
+input UserCreatepermissionsInput {
+  set: [Permission!]
 }
 
 """

@@ -1,7 +1,22 @@
+# enums are useful in graphQL for when you want to have a preset list of possible options.
+# This will be the only place we have to keep up with the permissions.
+# This will also prevent others from making more permission types.
+enum Permission {
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
 type User {
   id: ID! @id
   name: String!
-  email: String!
+  email: String! @unique
+  password: String!
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: [Permission] @scalarList(strategy: RELATION)
 }
 
 type Item {
@@ -14,3 +29,5 @@ type Item {
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
 }
+
+# [String]! @scalarList(permission: RELATION)

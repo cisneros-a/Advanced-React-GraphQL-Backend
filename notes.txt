@@ -79,3 +79,33 @@ What is the ItemConnections query?
     4. Edges and pageInfo are for infinite scroll. It'll let you know what is the last
         item you loaded, so you second query can pull items past that.\
     5. For aggregate, you can query the count and that will return all the item count.
+
+Steps for User Signup:
+    1. Go to datamodel.graphql and create type User.
+    2. Run 'npm run deploy/ to update our server.
+    3. Create a signup mutation in our schema.graphql.
+    4. Everytime we add something to our Schema, we need to create the corresponding resolver.
+    5. We need to modify Yoga Server to accept cookies. (Explain why below)
+    6. In Mutation.js, to write our resolver. 
+
+Why are using cookies over localStorage?
+    - Everytime we refresh the page, our cookie is going to send along our JWT to our server.
+    - We need to be able to do server side rendering of the logged in parts. (Like our cart)
+    - So if we used localStorage, we would have a gap from when our view appeared to when it would 
+        show the real status of our cart.
+    - It will grab the JWT from localStorage, but not before the server renders.
+
+Steps for setting up our Yoga Server to accept cookies:
+    1. Go to index.js
+    2. import cookieParser
+    3. have our express server use cookieParser
+
+
+Express Middleware:
+    - Middleware is a function that win run in the middle of the request and response.
+    - There are things you may want to in between the request an response:
+        - Authenticate the user
+        - Transform the data
+        - Parse cookies
+        - etc
+    - 
