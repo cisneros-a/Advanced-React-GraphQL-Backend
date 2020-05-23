@@ -1,4 +1,9 @@
 # import * from './generated/prisma.graphql'
+
+type SuccessMessage {
+  message: String
+}
+
 type Mutation {
   createItem(
     title: String
@@ -10,6 +15,14 @@ type Mutation {
   updateItem(id: ID!, title: String, description: String, price: Int): Item!
   deleteItem(id: ID!): Item
   signup(email: String!, password: String!, name: String!): User!
+  signin(email: String!, password: String!): User!
+  signout: SuccessMessage
+  requestReset(email: String!): SuccessMessage
+  resetPassword(
+    resetToken: String!
+    password: String!
+    confirmPassword: String!
+  ): User!
 }
 
 type Query {
@@ -23,10 +36,20 @@ type Query {
   ): [Item]!
   # where does ItemWhereUniqueInput come from? It was generated in our prisma.graphql by Prisma
   item(where: ItemWhereUniqueInput!): Item
-  itemsConnection(where: ItemWhereInput): ItemConnection
+  itemsConnection(where: ItemWhereInput): ItemConnection!
+  user(where: UserWhereUniqueInput!): User
+
+  me: User
 }
 
 # what is happening here for mutation when it is returning an item is that it
 # will look for the type "Item" within this file, but will not find it.
 # The comment at the top is how we import using Prisma (not a standard feauture of graphQL)
 # This will look for the type within that file and import just that type here.
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  permissions: [Permission]
+}
