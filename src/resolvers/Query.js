@@ -7,10 +7,20 @@ const Query = {
   items: forwardTo("db"),
   item: forwardTo("db"),
   itemsConnection: forwardTo("db"),
-  // async items(parent, args, ctx, info) {
-  //   const items = await ctx.db.query.items();
-  //   return items;
-  // },
+  user: forwardTo("db"),
+  me(parent, args, ctx, info) {
+    //The only way to access the request that is in server.js is to use ctx here.
+    // Keep in mind that it needs to be fully typed out request.
+    if (!ctx.request.userId) {
+      return null;
+    }
+    return ctx.db.query.user(
+      {
+        where: { id: ctx.request.userId },
+      },
+      info
+    );
+  },
 };
 
 module.exports = Query;
