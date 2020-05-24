@@ -5,6 +5,7 @@ const { randomBytes } = require("crypto");
 //node has functions in a util mdoule. Promsify will turn function with callbacks
 // to promise functions/
 const { promisify } = require("util");
+const { transport, makeANiceEmail } = require("../mail");
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
@@ -135,7 +136,6 @@ const Mutations = {
       where: { email: args.email },
       data: { resetToken, resetTokenExpiry },
     });
-    console.log(res);
     return { message: "Thanks!" };
     //3. email them that reset token
   },
@@ -154,9 +154,19 @@ const Mutations = {
       where: { email: args.email },
       data: { resetToken, resetTokenExpiry },
     });
-    console.log(res);
-    return { message: "Thanks!" };
     // 3. Email them that reset token
+    const mailRes = await transport.sendMail({
+      from: "adrian.cis45@gmail.com",
+      to: user.email,
+      subject: "Your password reset",
+      html: makeANiceEmail(`Your Password Reset Token is here!
+   \n\n 
+   <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}
+   ">Click HERE to Reset</a> `),
+    });
+
+    //4 return the messsage
+    return { message: "Thanks!" };
   },
 
   async resetPassword(parent, args, ctx, info) {
