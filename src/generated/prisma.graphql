@@ -52,6 +52,7 @@ input ItemCreateInput {
   image: String
   largeImage: String
   price: Int!
+  user: UserCreateOneInput!
 }
 
 """
@@ -795,6 +796,12 @@ input UserCreateInput {
   resetTokenExpiry: String
   permissions: UserCreatepermissionsInput
 }
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreatepermissionsInput {
   set: [Permission!]
 }
