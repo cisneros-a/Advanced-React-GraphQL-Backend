@@ -2,6 +2,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { randomBytes } = require("crypto");
+const { hasPermission } = require("../utils");
+
 //node has functions in a util mdoule. Promsify will turn function with callbacks
 // to promise functions/
 const { promisify } = require("util");
@@ -59,9 +61,16 @@ const Mutations = {
   async deleteItem(parent, args, ctx, info) {
     // 1. find the item
     const where = { id: args.id };
-    const item = await ctx.db.query.item({ where }, `{id title}`);
+    const item = await ctx.db.query.item({ where }, `{id title user { id }}`);
     // TODO:
     // 2. Check if they own that item, or have the permission
+    const ownsItem = item.user.id === ctx.request.userId;
+    const hasPermissions = ctx.request.user.permissions.some((permission) =>
+      ["Admin", "ITEMDELETE"].includes(permission)
+    );
+    if (!ownsItem && !hasPermissions) {
+      throw new Error("You don't have permission to do that!");
+    }
     // 3. Delete it!
     return ctx.db.mutation.deleteItem({ where }, info);
   },
@@ -213,6 +222,41 @@ const Mutations = {
     });
     // 8. return the new user
     return updatedUser;
+  },
+
+  async updatePermissions(parent, args, ctx, info) {
+    //1. Check if they are logged in.
+
+    if (!ctx.request.userId) {
+      throw new Error("You must be logged in to do this");
+    }
+    //2. Query the current user
+    const currentUser = await ctx.db.query.user(
+      {
+        where: { id: ctx.request.userId },
+      },
+      info
+    );
+    //3. Check if they have permission to do this
+    hasPermission(currentUser, ["ADMIN", "PERMISSIONUPDATE"]);
+    //4. Update the permissions
+    return ctx.db.mutation.updateUser(
+      {
+        data: {
+          //we are nesting set because Enum is Permissions and that will also be the name
+          // of the argument we will be getting so we have to add a nested object, set.
+          permissions: {
+            set: args.permissions,
+          },
+        },
+        // the reason we are not using ctx.db.userId
+        // is because we may be updating someone else's permissions
+        where: {
+          id: args.userId,
+        },
+      },
+      info
+    );
   },
 };
 

@@ -23,6 +23,7 @@ type Mutation {
     password: String!
     confirmPassword: String!
   ): User!
+  updatePermissions(permissions: [Permission], userId: ID!): User
 }
 
 type Query {
@@ -38,6 +39,7 @@ type Query {
   item(where: ItemWhereUniqueInput!): Item
   itemsConnection(where: ItemWhereInput): ItemConnection!
   user(where: UserWhereUniqueInput!): User
+  users: [User]!
 
   me: User
 }

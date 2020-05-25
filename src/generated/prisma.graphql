@@ -27,6 +27,7 @@ type Item implements Node {
   price: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
+  user(where: UserWhereInput): User!
 }
 
 """
@@ -769,7 +770,7 @@ type User implements Node {
   password: String!
   resetToken: String
   resetTokenExpiry: String
-  permissions: [Permission]
+  permissions: [Permission!]!
 }
 
 """
@@ -887,6 +888,19 @@ input UserUpdateInput {
   email: String
   resetToken: String
   resetTokenExpiry: Float
+  permissions: UserUpdatepermissionsInput
+}
+input UserUpdateDataInput {
+  name: String
+  email: String
+  password: String
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: UserUpdatepermissionsInput
+}
+
+input UserUpdatepermissionsInput {
+  set: [Permission!]
 }
 
 input UserUpdateManyMutationInput {
